@@ -1,4 +1,4 @@
-# youtube_loader
+youtube_loader
 =====================================================
 CLI tool to download and convert videos from youtube.
 
