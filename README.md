@@ -2,6 +2,11 @@ youtube_loader
 =====================================================
 CLI tool to download and convert videos from youtube.
 
+### DEPENDENCIES
+- *cmake --> apt-get install cmake*
+- *libcurl --> apt-get install libcurl4-openssl-dev*
+- *ffmpeg --> apt-get install ffmpeg (if you want to be able to convert the videos to mp3)*
+
 ### BUILD PROCESS
 ```
 $ cd youtube_loader
