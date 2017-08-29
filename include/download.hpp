@@ -1,5 +1,6 @@
 #include <curl/curl.h>
 #include <fstream>
+#include <sys/stat.h>
 
 #include "curl.hpp"
 
@@ -64,6 +65,31 @@ bool is_existing(std::string filename)
 }
 
 /**
+ * Checks whether the output folder exists and creates it if not.
+ * (TODO: Using the boost library could provide cross-platform support.)
+ */
+void check_output_folder()
+{
+    struct stat stat_struct;
+    std::string dir = "../output/";
+
+    /* The stat function returns information about the attributes of the file
+       named by dir in the structure pointed to by stat_struct. */
+    stat(dir.c_str(), &stat_struct);
+
+    /* Checks whether it is a directory using the st_mode field. */
+    if (!S_ISDIR(stat_struct.st_mode))
+    {
+        std::cout << dir << " does not exist - creating folder." << std::endl;
+        if (mkdir("../output", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
+        {
+            std::cout << "Error while creating output directory." << std::endl;
+            std::exit(1);
+        }
+    }
+}
+
+/**
  * Downloads and saves the video.
  * It checks for duplicate downloads and renames them if necessary.
  * (The originals aren't overwritten - incremented index).
@@ -73,6 +99,8 @@ void download_video(const char* url, std::string filename, std::string extension
     filename += "." + extension;
     /* The downloaded videos should be stored in the output folder. */
     filename = "../output/" + filename;
+
+    check_output_folder();
 
     /* Appends an index with the number of the copy of the same file to the filename. */
     if (is_existing(filename))
