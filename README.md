@@ -11,7 +11,6 @@ CLI tool to download and convert videos from youtube.
 ```
 $ cd youtube_loader
 $ mkdir build
-$ mkdir output (will be automated soon)
 $ cd build
 $ cmake ..
 $ make
