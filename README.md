@@ -6,6 +6,7 @@ CLI tool to download and convert videos from youtube.
 - **cmake** --> apt-get install cmake
 - **libcurl** --> apt-get install libcurl4-openssl-dev
 - **ffmpeg** --> apt-get install ffmpeg (if you want to be able to convert the videos to mp3)
+- **libboost** --> apt-get install libboost-all-dev
 
 ### BUILD PROCESS
 ```
