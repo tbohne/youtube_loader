@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <fstream>
 #include <sys/stat.h>
+#include <boost/filesystem.hpp>
 
 #include "curl.hpp"
 
@@ -65,27 +66,13 @@ bool is_existing(std::string filename)
 }
 
 /**
- * Checks whether the output folder exists and creates it if not.
- * (TODO: Using the boost library could provide cross-platform support.)
+ * Checks whether the output dir exists and creates it if not.
  */
-void check_output_folder()
+void check_output_dir()
 {
-    struct stat stat_struct;
-    std::string dir = "../output/";
-
-    /* The stat function returns information about the attributes of the file
-       named by dir in the structure pointed to by stat_struct. */
-    stat(dir.c_str(), &stat_struct);
-
-    /* Checks whether it is a directory using the st_mode field. */
-    if (!S_ISDIR(stat_struct.st_mode))
+    if (!boost::filesystem::exists("../output/"))
     {
-        std::cout << dir << " does not exist - creating folder." << std::endl;
-        if (mkdir("../output", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
-        {
-            std::cout << "Error while creating output directory." << std::endl;
-            std::exit(1);
-        }
+        boost::filesystem::create_directories("../output/");
     }
 }
 
@@ -97,10 +84,10 @@ void check_output_folder()
 void download_video(const char* url, std::string filename, std::string extension, CURL* curl)
 {
     filename += "." + extension;
-    /* The downloaded videos should be stored in the output folder. */
+    /* The downloaded videos should be stored in the output dir. */
     filename = "../output/" + filename;
 
-    check_output_folder();
+    check_output_dir();
 
     /* Appends an index with the number of the copy of the same file to the filename. */
     if (is_existing(filename))
