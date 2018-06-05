@@ -1,6 +1,5 @@
 #include <curl/curl.h>
 #include <fstream>
-#include <sys/stat.h>
 #include <boost/filesystem.hpp>
 
 #include "curl.hpp"

@@ -133,6 +133,7 @@ std::string extract_url(std::string response)
 
     /* If there is additional data to be added, it is done here
        (otherwise it adds an empty string). */
+
     url += append_to_url;
     url = unescape_unicode(url);
     url = remove_itag_params(url);
