@@ -1,3 +1,11 @@
+#include "../include/CurlHandler.hpp"
+
+namespace youtube_loader
+{
+
+CurlHandler::CurlHandler() {}
+CurlHandler::~CurlHandler() {}
+
 /**
  * Writes the received data.
  * This callback function gets called by libcurl as soon as there is data
@@ -9,7 +17,7 @@
  * actually taken care of. If that amount differs from the amount passed
  * to your callback function, it'll signal an error condition to the library.
  */
-size_t write_callback(char* buffer, size_t size, size_t nmemb, std::string* response)
+static size_t write_callback(char* buffer, size_t size, size_t nmemb, std::string* response)
 {
     *response += buffer;
     return size * nmemb;
@@ -20,7 +28,7 @@ size_t write_callback(char* buffer, size_t size, size_t nmemb, std::string* resp
  * int (*download_progress)(void*, curl_off_t, curl_off_t, curl_off_t, curl_off_t)
  * return_type (*func_name)(parameter_types) --> function pointer to download_progress().
  */
-void write_file(CURL* curl, const char* url, FILE* file, std::string filename,
+void CurlHandler::write_file(CURL* curl, const char* url, FILE* file, std::string filename,
     int (*download_progress)(void*, curl_off_t, curl_off_t, curl_off_t, curl_off_t))
 {
     /* Resets all options of a libcurl session handle. */
@@ -63,7 +71,7 @@ void write_file(CURL* curl, const char* url, FILE* file, std::string filename,
  * Receives the content of the response to the url currently working on.
  * http://www.cplusplus.com/forum/unices/45878/
  */
-void receive_url_response(CURL* curl, const char* url, std::string* response)
+void CurlHandler::receive_url_response(CURL* curl, const char* url, std::string* response)
 {
     /* Resets all options of a libcurl session handle. */
     curl_easy_reset(curl);
@@ -94,3 +102,5 @@ void receive_url_response(CURL* curl, const char* url, std::string* response)
         std::exit(1);
     }
 }
+
+} // namespace youtube_loader

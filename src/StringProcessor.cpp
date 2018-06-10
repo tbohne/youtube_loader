@@ -1,12 +1,16 @@
-#include <iostream>
-#include <string>
-#include <codecvt>
+#include "../include/StringProcessor.hpp"
+
+namespace youtube_loader
+{
+
+StringProcessor::StringProcessor() {}
+StringProcessor::~StringProcessor() {}
 
 /**
  * Converts cp to utf-8 and returns the string.
  * https://stackoverflow.com/questions/28534221/c-convert-asii-escaped-unicode-string-into-utf8-string.
  */
-std::string to_utf8(uint32_t cp)
+std::string StringProcessor::to_utf8(uint32_t cp)
 {
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
     return conv.to_bytes((char32_t)cp);
@@ -16,7 +20,7 @@ std::string to_utf8(uint32_t cp)
  * Converts escaped unicode strings into utf8 string.
  * https://stackoverflow.com/questions/28534221/c-convert-asii-escaped-unicode-string-into-utf8-string
  */
-std::string unescape_unicode(std::string str)
+std::string StringProcessor::unescape_unicode(std::string str)
 {
     int start_idx = 0;
 
@@ -43,7 +47,7 @@ std::string unescape_unicode(std::string str)
 /**
  * Extracts the format of the video.
  */
-std::string extract_format(std::string url)
+std::string StringProcessor::extract_format(std::string url)
 {
     std::string str = "type=video/";
     int start_idx = url.find(str) + str.length();
@@ -63,7 +67,7 @@ std::string extract_format(std::string url)
 /**
  * Extracts the title of the video.
  */
-std::string extract_title(std::string response)
+std::string StringProcessor::extract_title(std::string response)
 {
     /* The escaped quotes and the colon is used to get the exact length. */
     std::string str = "\"title\":\"";
@@ -81,7 +85,7 @@ std::string extract_title(std::string response)
  * differentiate between quality profiles. The remaining "itags" need to be removed
  * since they aren't used (I only use the first one which seems to have the best quality).
  */
-std::string remove_itag_params(std::string url)
+std::string StringProcessor::remove_itag_params(std::string url)
 {
     int itag_idx = url.find("itag=");
     /* The part between "itag=" and "&quality=" should be erased. */
@@ -93,7 +97,7 @@ std::string remove_itag_params(std::string url)
  * The first url seems to be the one with the best quality available.
  * TODO: Check whether it's always the best quality.
  */
-std::string extract_url(std::string response)
+std::string StringProcessor::extract_url(std::string response)
 {
     if ((signed)response.find("url_encoded_fmt_stream_map") == -1)
     {
@@ -140,3 +144,5 @@ std::string extract_url(std::string response)
 
     return url;
 }
+
+} // namespace youtube_loader

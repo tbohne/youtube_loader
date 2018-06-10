@@ -1,18 +1,19 @@
-#include <curl/curl.h>
-#include <fstream>
-#include <boost/filesystem.hpp>
+# include "../include/Loader.hpp"
 
-#include "curl.hpp"
+namespace youtube_loader
+{
 
-#define MEGABYTE 1048576;
-/* Special unicode char representing a filled "block". */
-#define BLOCK "\u2588\u2588"
-#define POINTS "....................";
+Loader::Loader(CurlHandler* handler)
+{
+    this->handler = handler;
+}
+
+Loader::~Loader() {}
 
 /**
  * Callback function that visualizes the current download progress.
  */
-int download_progress(
+static int download_progress(
     void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow
 )
 {
@@ -58,7 +59,7 @@ int download_progress(
 /**
  * Checks whether the given filename refers to an existing file.
  */
-bool is_existing(std::string filename)
+bool Loader::is_existing(std::string filename)
 {
     std::ifstream infile(filename);
     return infile.good();
@@ -67,7 +68,7 @@ bool is_existing(std::string filename)
 /**
  * Checks whether the output dir exists and creates it if not.
  */
-void check_output_dir()
+void Loader::check_output_dir()
 {
     if (!boost::filesystem::exists("../output/"))
     {
@@ -80,7 +81,7 @@ void check_output_dir()
  * It checks for duplicate downloads and renames them if necessary.
  * (The originals aren't overwritten - incremented index).
  */
-void download_video(const char* url, std::string filename, std::string extension, CURL* curl)
+void Loader::download_video(const char* url, std::string filename, std::string extension, CURL* curl)
 {
     filename += "." + extension;
     /* The downloaded videos should be stored in the output dir. */
@@ -114,7 +115,9 @@ void download_video(const char* url, std::string filename, std::string extension
     }
 
     /* download_progess is a pointer to the function. */
-    write_file(curl, url, file, filename, download_progress);
+    this->handler->write_file(curl, url, file, filename, download_progress);
 
     std::cout << std::endl << "Done!" << std::endl;
 }
+
+} // namespace youtube_loader

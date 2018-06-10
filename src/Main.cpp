@@ -1,9 +1,15 @@
+#include <curl/curl.h>
+#include <fstream>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 
-#include "download.hpp"
-#include "string_processing.hpp"
+#include "CurlHandler.cpp"
+#include "Loader.cpp"
+#include "StringProcessor.cpp"
+
+using namespace youtube_loader;
 
 int main(int argc, char* argv[])
 {
@@ -30,6 +36,10 @@ int main(int argc, char* argv[])
     // Starts a libcurl easy session.
     CURL* curl = curl_easy_init();
 
+    CurlHandler* handler = new CurlHandler();
+    StringProcessor* processor = new StringProcessor();
+    Loader* loader = new Loader(handler);
+
     // Iterates through the entered urls.
     for (int i = 1; i < argc; i++)
     {
@@ -39,9 +49,9 @@ int main(int argc, char* argv[])
         // Pointer to the response-string.
         std::string* response_ptr = &response;
         // Receives the current url's http response and stores it in the response-string.
-        receive_url_response(curl, curr_url.c_str(), response_ptr);
-        std::string title = extract_title(response);
-        std::string url = extract_url(response);
+        handler->receive_url_response(curl, curr_url.c_str(), response_ptr);
+        std::string title = processor->extract_title(response);
+        std::string url = processor->extract_url(response);
 
         // curl_easy_escape --> URL encodes the given string.
         std::string escaped_title = (std::string)curl_easy_escape(
@@ -59,9 +69,9 @@ int main(int argc, char* argv[])
             std::cout << "To download this video a signature is required --> skipping url" << std::endl;
             continue;
         }
-        std::string extension = extract_format(url_to_download_from);
-        title = unescape_unicode(title);
-        download_video(url_to_download_from.c_str(), title, extension, curl);
+        std::string extension = processor->extract_format(url_to_download_from);
+        title = processor->unescape_unicode(title);
+        loader->download_video(url_to_download_from.c_str(), title, extension, curl);
     }
     curl_easy_cleanup(curl);
     std::cout << "Would you like to convert the downloaded file to mp3? (y/n)" << std::endl;
