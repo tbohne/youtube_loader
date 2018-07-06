@@ -22,11 +22,8 @@ void print_header(int urls)
 void convert_to_mp3()
 {
     std::cout << "Would you like to convert the downloaded file to mp3? (y/n)" << std::endl;
-
-    char buffer[1024];
-    std::cin.getline(buffer, 1024);
-    // The string class' constructor takes a NULL-terminated C-string.
-    std::string mp3(buffer);
+    std::string mp3;
+    std::getline(std::cin, mp3);
 
     if (mp3 == "y" || mp3 == "Y")
     {
@@ -58,8 +55,9 @@ std::string get_response(CURL* curl, std::string curr_url, CurlHandler* handler)
     return response;
 }
 
-std::string the_actual_process(
-    CURL* curl, StringProcessor* processor,
+std::string construct_url_to_download_from(
+    CURL* curl,
+    StringProcessor* processor,
     std::string response,
     std::string title
 )
@@ -96,22 +94,23 @@ int main(int argc, char* argv[])
 
     std::string response = get_response(curl, argv[1], handler);
     std::string title = processor->extract_title(response);
-    std::string url_to_download_from = the_actual_process(curl, processor, response, title);
+    std::string url_to_download_from = construct_url_to_download_from(
+        curl, processor, response, title
+    );
 
     // If the video requires a signature, we aren't supposed to download it.
     if ((signed)url_to_download_from.find("&s=") != -1)
     {
-        std::cout << "To download this video a signature is required --> skipping url" << std::endl;
+        std::cout << "To download this video a signature is required - aborted." << std::endl;
     }
     else
     {
         std::string extension = processor->extract_format(url_to_download_from);
         title = processor->unescape_unicode(title);
         loader->download_video(url_to_download_from.c_str(), title, extension, curl);
+        convert_to_mp3();
     }
-
     curl_easy_cleanup(curl);
-    convert_to_mp3();
 
     std::cout << "Done!" << std::endl;
     return 0;
