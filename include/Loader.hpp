@@ -1,7 +1,7 @@
 #define MEGABYTE 1048576;
-/* Special unicode char representing a filled "block". */
+/* Unicode char representing a filled "block". */
 #define BLOCK "\u2588\u2588"
-#define POINTS "....................";
+#define POINTS "...................."
 
 namespace youtube_loader
 {
@@ -10,7 +10,6 @@ class Loader
 {
 
 public:
-
     Loader(CurlHandler* handler);
     ~Loader();
 
@@ -20,9 +19,14 @@ public:
 
 private:
     CurlHandler* handler;
-
 };
 
-static int download_progress(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
+static int download_progress(
+    void* clientp,
+    curl_off_t dltotal,
+    curl_off_t dlnow,
+    curl_off_t ultotal,
+    curl_off_t ulnow
+);
 
 } // namespace youtube_loader
