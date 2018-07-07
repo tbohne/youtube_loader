@@ -18,4 +18,4 @@ $ make
 $ ./main https://www.youtube.com/...
 ```
 
-The downloaded videos and converted mp3s are stored in the output folder.
+The downloaded videos and converted mp3s are stored in the output directory.
