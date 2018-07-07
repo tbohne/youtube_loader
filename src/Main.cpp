@@ -11,6 +11,10 @@
 
 using namespace youtube_loader;
 
+/**
+ * @brief Prints a header to the console.
+ * @param int urls - the number of urls entered by the user.
+ */
 void print_header(int urls)
 {
     std::cout << "#################################################################" << std::endl;
@@ -19,6 +23,9 @@ void print_header(int urls)
     std::cout << "--> " << urls << " url(s) entered." << std::endl;
 }
 
+/**
+ * @brief Performs the mp4 to mp3 conversion of the video if the user asks for it.
+ */
 void convert_to_mp3()
 {
     std::cout << "Would you like to convert the downloaded file to mp3? (y/n)" << std::endl;
@@ -33,10 +40,12 @@ void convert_to_mp3()
     }
 }
 
+/**
+ * @brief Sets up the program environment that libcurl needs.
+ *        Almost all interface functions return a CURLcode (curl error code).
+ */
 void init_curl()
 {
-    // Almost all interface functions return a CURLcode (curl error code).
-    // CURL_GLOBAL_ALL --> Initializes everything needed.
     CURLcode curl_code = curl_global_init(CURL_GLOBAL_ALL);
     if (curl_code != CURLE_OK)
     {
@@ -45,16 +54,29 @@ void init_curl()
     }
 }
 
-std::string get_response(CURL* curl, std::string curr_url, CurlHandler* handler)
+/**
+ * @brief Receives the current url's http response and stores it in the response-string.
+ * @param CURL* curl - the CURL instance
+ * @param string url - the requested url
+ * @param CurlHandler* handler - the handler that performs the curl operations
+ * @return string response - the http response
+ */
+std::string get_response(CURL* curl, std::string url, CurlHandler* handler)
 {
     std::string response = "";
     std::string* response_ptr = &response;
-    // Receives the current url's http response and stores it in the response-string.
-    handler->receive_url_response(curl, curr_url.c_str(), response_ptr);
-
+    handler->receive_url_response(curl, url.c_str(), response_ptr);
     return response;
 }
 
+/**
+ * @brief Constructs the url for the actual download of the video.
+ * @param CURL* curl - the CURL instance
+ * @param StringProcessor* processor - helper object for string operations
+ * @param string response - the original http response
+ * @param string title - the video's title
+ * @return string url_to_download_from - the url to download from
+ */
 std::string construct_url_to_download_from(
     CURL* curl,
     StringProcessor* processor,
@@ -72,10 +94,15 @@ std::string construct_url_to_download_from(
         curl, url.c_str(), url.size(), NULL
     );
     std::string url_to_download_from = unescaped_url + "title=" + escaped_title;
-
     return url_to_download_from;
 }
 
+/**
+ * @brief Handles the command line arguments, initializes the
+ *        helper objects and initiates the process of downloading the video.
+ * @param int argc - the number of command line arguments
+ * @param char* argv[] - an array containing the command line arguments
+ */
 int main(int argc, char* argv[])
 {
     if (argc < 2)
@@ -111,7 +138,6 @@ int main(int argc, char* argv[])
         convert_to_mp3();
     }
     curl_easy_cleanup(curl);
-
     std::cout << "Done!" << std::endl;
     return 0;
 }
